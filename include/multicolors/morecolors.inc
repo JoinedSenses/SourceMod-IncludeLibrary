@@ -21,11 +21,11 @@
 
 #define MC_GAME_DODS           0
 
-bool MC_SkipList[MAXPLAYERS + 1];
+bool MC_SkipList[MAXPLAYERS+1];
 StringMap MC_Trie;
 int MC_TeamColors[][] = {{0xCCCCCC, 0x4D7942, 0xFF4040}}; // Multi-dimensional array for games that don't support SayText2. First index is the game index (as defined by the GAME_ defines), second index is team. 0 = spectator, 1 = team1, 2 = team2
 
-static ConVar sm_show_activity = null;
+static ConVar sm_show_activity;
 
 /**
  * Prints a message to a specific client in the chat area.
@@ -259,6 +259,7 @@ stock void MC_ReplaceColorCodes(char[] buffer, int author = 0, bool removeTags =
 		ReplaceString(buffer, maxlen, "{default}", "", false);
 		ReplaceString(buffer, maxlen, "{teamcolor}", "", false);
 	}
+
 	if (author != 0 && !removeTags) {
 		if (author < 0 || author > MaxClients) {
 			ThrowError("Invalid client index %i", author);
@@ -280,12 +281,13 @@ stock void MC_ReplaceColorCodes(char[] buffer, int author = 0, bool removeTags =
 	// Since the string's size is going to be changing, output will hold the replaced string and we'll search buffer
 
 	Regex regex = new Regex("{[#a-zA-Z0-9]+}");
-	for(int i = 0; i < 1000; i++) { // The RegEx extension is quite flaky, so we have to loop here :/. This loop is supposed to be infinite and broken by return, but conditions have been added to be safe.
+	for (int i = 0; i < 1000; i++) { // The RegEx extension is quite flaky, so we have to loop here :/. This loop is supposed to be infinite and broken by return, but conditions have been added to be safe.
 		if (regex.Match(buffer[cursor]) < 1) {
 			delete regex;
 			strcopy(buffer, maxlen, output);
 			return;
 		}
+
 		regex.GetSubString(0, tag, sizeof(tag));
 		MC_StrToLower(tag);
 		cursor = StrContains(buffer[cursor], tag, false) + cursor + 1;
@@ -337,11 +339,12 @@ stock void MC_ReplaceColorCodes(char[] buffer, int author = 0, bool removeTags =
  */
 stock void CSubString(const char[] input, char[] output, int maxlen, int start, int numChars = 0) {
 	int i = 0;
-	for(;;) {
+	for (;;) {
 		if (i == maxlen - 1 || i >= numChars || input[start + i] == '\0') {
 			output[i] = '\0';
 			return;
 		}
+
 		output[i] = input[start + i];
 		i++;
 	}
@@ -354,7 +357,7 @@ stock void CSubString(const char[] input, char[] output, int maxlen, int start, 
  */
 stock void MC_StrToLower(char[] buffer) {
 	int len = strlen(buffer);
-	for(int i = 0; i < len; i++) {
+	for (int i = 0; i < len; i++) {
 		buffer[i] = CharToLower(buffer[i]);
 	}
 }
@@ -480,15 +483,12 @@ stock int MC_ShowActivity(int client, const char[] format, any ...) {
 
 		GetClientName(client, name, sizeof(name));
 		AdminId id = GetUserAdmin(client);
-		if (id == INVALID_ADMIN_ID
-			|| !id.HasFlag(Admin_Generic, Access_Effective))
-		{
+		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
 			sign = "PLAYER";
 		}
 
 		/* Display the message to the client? */
-		if (replyto == SM_REPLY_TO_CONSOLE)
-		{
+		if (replyto == SM_REPLY_TO_CONSOLE) {
 			SetGlobalTransTarget(client);
 			VFormat(szBuffer, sizeof(szBuffer), format, 3);
 
@@ -510,23 +510,22 @@ stock int MC_ShowActivity(int client, const char[] format, any ...) {
 	}
 
 	for (int i = 1; i <= MaxClients; ++i) {
-		if (!IsClientInGame(i)
-		|| IsFakeClient(i)
-		|| (display_in_chat && i == client)) {
+		if (!IsClientInGame(i) || IsFakeClient(i) || (display_in_chat && i == client)) {
 			continue;
 		}
 
 		AdminId id = GetUserAdmin(i);
 		SetGlobalTransTarget(i);
-		if (id == INVALID_ADMIN_ID
-		|| !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
 			/* Treat this as a normal user. */
 			if ((value & 1) | (value & 2)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
 
 				if ((value & 2) || (i == client)) {
 					newsign = name;
+				}
+				else {
+					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 3);
@@ -537,14 +536,14 @@ stock int MC_ShowActivity(int client, const char[] format, any ...) {
 		else {
 			/* Treat this as an admin user */
 			bool is_root = id.HasFlag(Admin_Root, Access_Effective);
-			if ((value & 4)
-			|| (value & 8)
-			|| ((value & 16) && is_root)) {
+			if ((value & 4) || (value & 8) || ((value & 16) && is_root)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
 
 				if ((value & 8) || ((value & 16) && is_root) || (i == client)) {
 					newsign = name;
+				}
+				else {
+					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 3);
@@ -568,8 +567,9 @@ stock int MC_ShowActivity(int client, const char[] format, any ...) {
  * @error
  */
 stock int MC_ShowActivityEx(int client, const char[] tag, const char[] format, any ...) {
-	if (sm_show_activity == null)
+	if (sm_show_activity == null) {
 		sm_show_activity = FindConVar("sm_show_activity");
+	}
 
 	char szBuffer[MC_MAX_MESSAGE_LENGTH];
 	//char szCMessage[MC_MAX_MESSAGE_LENGTH];
@@ -586,8 +586,7 @@ stock int MC_ShowActivityEx(int client, const char[] tag, const char[] format, a
 
 		GetClientName(client, name, sizeof(name));
 		AdminId id = GetUserAdmin(client);
-		if (id == INVALID_ADMIN_ID
-		|| !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
 			sign = "PLAYER";
 		}
 
@@ -614,23 +613,22 @@ stock int MC_ShowActivityEx(int client, const char[] tag, const char[] format, a
 	}
 
 	for (int i = 1; i <= MaxClients; ++i) {
-		if (!IsClientInGame(i)
-		|| IsFakeClient(i)
-		|| (display_in_chat && i == client)) {
+		if (!IsClientInGame(i) || IsFakeClient(i) || (display_in_chat && i == client)) {
 			continue;
 		}
 
 		AdminId id = GetUserAdmin(i);
 		SetGlobalTransTarget(i);
-		if (id == INVALID_ADMIN_ID
-		|| !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
 			/* Treat this as a normal user. */
 			if ((value & 1) | (value & 2)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
 
 				if ((value & 2) || (i == client)) {
 					newsign = name;
+				}
+				else {
+					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
@@ -641,14 +639,14 @@ stock int MC_ShowActivityEx(int client, const char[] tag, const char[] format, a
 		else {
 			/* Treat this as an admin user */
 			bool is_root = id.HasFlag(Admin_Root, Access_Effective);
-			if ((value & 4)
-			|| (value & 8)
-			|| ((value & 16) && is_root)) {
+			if ((value & 4) || (value & 8) || ((value & 16) && is_root)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
 
 				if ((value & 8) || ((value & 16) && is_root) || (i == client)) {
 					newsign = name;
+				}
+				else {
+					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
@@ -694,8 +692,7 @@ stock int MC_ShowActivity2(int client, const char[] tag, const char[] format, an
 		GetClientName(client, name, sizeof(name));
 
 		AdminId id = GetUserAdmin(client);
-		if (id == INVALID_ADMIN_ID
-		|| !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
 			sign = "PLAYER";
 		}
 
@@ -721,23 +718,22 @@ stock int MC_ShowActivity2(int client, const char[] tag, const char[] format, an
 	}
 
 	for (int i = 1; i <= MaxClients; ++i) {
-		if (!IsClientInGame(i)
-		|| IsFakeClient(i)
-		|| i == client) {
+		if (!IsClientInGame(i) || IsFakeClient(i) || i == client) {
 			continue;
 		}
 
 		AdminId id = GetUserAdmin(i);
 		SetGlobalTransTarget(i);
-		if (id == INVALID_ADMIN_ID
-		|| !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
 			/* Treat this as a normal user. */
 			if ((value & 1) | (value & 2)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
 
 				if ((value & 2)) {
 					newsign = name;
+				}
+				else {
+					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
@@ -748,14 +744,15 @@ stock int MC_ShowActivity2(int client, const char[] tag, const char[] format, an
 		else {
 			/* Treat this as an admin user */
 			bool is_root = id.HasFlag(Admin_Root, Access_Effective);
-			if ((value & 4)
-			|| (value & 8)
-			|| ((value & 16) && is_root)) {
+			if ((value & 4) || (value & 8) || ((value & 16) && is_root)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
+				
 
 				if ((value & 8) || ((value & 16) && is_root)) {
 					newsign = name;
+				}
+				else {
+					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);

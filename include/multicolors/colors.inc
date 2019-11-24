@@ -45,15 +45,15 @@ enum C_Colors {
 char C_Tag[][] = {"{default}", "{darkred}", "{green}", "{lightgreen}", "{red}", "{blue}", "{olive}", "{lime}", "{lightred}", "{purple}", "{grey}", "{yellow}", "{orange}", "{bluegrey}", "{lightblue}", "{darkblue}", "{grey2}", "{orchid}", "{lightred2}"};
 char C_TagCode[][] = {"\x01", "\x02", "\x04", "\x03", "\x03", "\x03", "\x05", "\x06", "\x07", "\x03", "\x08", "\x09", "\x10", "\x0A", "\x0B", "\x0C", "\x0D", "\x0E", "\x0F"};
 bool C_TagReqSayText2[] = {false, false, false, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false};
-bool C_EventIsHooked = false;
-bool C_SkipList[MAXPLAYERS+1] = {false,...};
+bool C_EventIsHooked;
+bool C_SkipList[MAXPLAYERS+1];
 
 /* Game default profile */
 bool C_Profile_Colors[] = {true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
 int C_Profile_TeamIndex[] = {NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX, NO_INDEX};
-bool C_Profile_SayText2 = false;
+bool C_Profile_SayText2;
 
-static ConVar sm_show_activity = null;
+static ConVar sm_show_activity;
 
 /**
  * Prints a message to a specific client in the chat area.
@@ -426,11 +426,18 @@ stock int C_FindRandomPlayerByTeam(int color_team) {
 	if (color_team == SERVER_INDEX) {
 		return 0;
 	}
+
+	int[] players = new int[MaxClients];
+	int count;
 	
 	for (int i = 1; i <= MaxClients; ++i) {
 		if (IsClientInGame(i) && GetClientTeam(i) == color_team) {
-			return i;
+			players[count++] = i;
 		}
+	}
+
+	if (count) {
+		return players[GetRandomInt(0, count-1)];
 	}
 
 	return NO_PLAYER;
@@ -640,6 +647,7 @@ stock int C_ShowActivity(int client, const char[] format, any ...) {
 		|| (display_in_chat && i == client)) {
 			continue;
 		}
+
 		AdminId id = GetUserAdmin(i);
 		SetGlobalTransTarget(i);
 		if (id == INVALID_ADMIN_ID
@@ -647,10 +655,14 @@ stock int C_ShowActivity(int client, const char[] format, any ...) {
 			/* Treat this as a normal user. */
 			if ((value & 1) | (value & 2)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
+				
 				if ((value & 2) || (i == client)) {
 					newsign = name;
 				}
+				else {
+					newsign = sign;
+				}
+
 				VFormat(szBuffer, sizeof(szBuffer), format, 3);
 
 				C_PrintToChatEx(i, client, "%s%s: %s", tag, newsign, szBuffer);
@@ -663,10 +675,14 @@ stock int C_ShowActivity(int client, const char[] format, any ...) {
 			|| (value & 8)
 			|| ((value & 16) && is_root)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
+				
 				if ((value & 8) || ((value & 16) && is_root) || (i == client)) {
 					newsign = name;
 				}
+				else {
+					newsign = sign;
+				}
+
 				VFormat(szBuffer, sizeof(szBuffer), format, 3);
 
 				C_PrintToChatEx(i, client, "%s%s: %s", tag, newsign, szBuffer);
@@ -736,22 +752,24 @@ stock int C_ShowActivityEx(int client, const char[] tag, const char[] format, an
 	}
 
 	for (int i = 1; i <= MaxClients; ++i) {
-		if (!IsClientInGame(i)
-		|| IsFakeClient(i)
-		|| (display_in_chat && i == client)) {
+		if (!IsClientInGame(i) || IsFakeClient(i) || (display_in_chat && i == client)) {
 			continue;
 		}
+
 		AdminId id = GetUserAdmin(i);
 		SetGlobalTransTarget(i);
-		if (id == INVALID_ADMIN_ID
-		|| !GetAdminFlag(id, Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID || !GetAdminFlag(id, Admin_Generic, Access_Effective)) {
 			/* Treat this as a normal user. */
 			if ((value & 1) | (value & 2)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
+
 				if ((value & 2) || (i == client)) {
 					newsign = name;
 				}
+				else {
+					newsign = sign;
+				}
+
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
 
 				C_PrintToChatEx(i, client, "%s%s: %s", tag, newsign, szBuffer);
@@ -760,14 +778,16 @@ stock int C_ShowActivityEx(int client, const char[] tag, const char[] format, an
 		else {
 			/* Treat this as an admin user */
 			bool is_root = GetAdminFlag(id, Admin_Root, Access_Effective);
-			if ((value & 4)
-			|| (value & 8)
-			|| ((value & 16) && is_root)) {
+			if ((value & 4) || (value & 8) || ((value & 16) && is_root)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
+
 				if ((value & 8) || ((value & 16) && is_root) || (i == client)) {
 					newsign = name;
 				}
+				else {
+					newsign = sign;
+				}
+
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
 
 				C_PrintToChatEx(i, client, "%s%s: %s", tag, newsign, szBuffer);
@@ -804,13 +824,13 @@ stock int C_ShowActivity2(int client, const char[] tag, const char[] format, any
 	char name[MAX_NAME_LENGTH] = "Console";
 	char sign[MAX_NAME_LENGTH] = "ADMIN";
 	if (client != 0) {
-		if (client < 0 || client > MaxClients || !IsClientConnected(client))
+		if (client < 0 || client > MaxClients || !IsClientConnected(client)) {
 			ThrowError("Client index %d is invalid", client);
+		}
 
 		GetClientName(client, name, sizeof(name));
 		AdminId id = GetUserAdmin(client);
-		if (id == INVALID_ADMIN_ID
-		|| !GetAdminFlag(id, Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID || !GetAdminFlag(id, Admin_Generic, Access_Effective)) {
 			sign = "PLAYER";
 		}
 
@@ -836,12 +856,10 @@ stock int C_ShowActivity2(int client, const char[] tag, const char[] format, any
 	}
 
 	for (int i = 1; i <= MaxClients; ++i) {
-		if (i == 0
-		|| !IsClientInGame(i)
-		|| IsFakeClient(i)
-		|| i == client) {
+		if (!IsClientInGame(i) || IsFakeClient(i) || i == client) {
 			continue;
 		}
+
 		AdminId id = GetUserAdmin(i);
 		SetGlobalTransTarget(i);
 		if (id == INVALID_ADMIN_ID
@@ -849,10 +867,14 @@ stock int C_ShowActivity2(int client, const char[] tag, const char[] format, any
 			/* Treat this as a normal user. */
 			if ((value & 1) | (value & 2)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
+
 				if ((value & 2)) {
 					newsign = name;
 				}
+				else {
+					newsign = sign;
+				}
+
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
 
 				C_PrintToChatEx(i, client, "%s%s: %s", tag, newsign, szBuffer);
@@ -865,10 +887,14 @@ stock int C_ShowActivity2(int client, const char[] tag, const char[] format, any
 			|| (value & 8)
 			|| ((value & 16) && is_root)) {
 				char newsign[MAX_NAME_LENGTH];
-				newsign = sign;
+
 				if ((value & 8) || ((value & 16) && is_root)) {
 					newsign = name;
 				}
+				else {
+					newsign = sign;
+				}
+
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
 
 				C_PrintToChatEx(i, client, "%s%s: %s", tag, newsign, szBuffer);
