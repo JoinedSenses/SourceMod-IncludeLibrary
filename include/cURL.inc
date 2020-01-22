@@ -394,7 +394,7 @@ native void curl_get_error_buffer(Handle hndl, char[] buffer, int maxlen);
  * @ param cell_t		maxlen		Destination buffer length (includes null terminator).
  * @ return 						The CURLcode code, see cURL_header.inc
  */
-native int CURLcode curl_easy_getinfo_string(Handle hndl, CURLINFO info, char[] buffer, int maxlen);
+native CURLcode curl_easy_getinfo_string(Handle hndl, CURLINFO info, char[] buffer, int maxlen);
 
 /**
  * Extract information from a curl handle. (CURLINFO_LONG, CURLINFO_DOUBLE only)
@@ -403,7 +403,7 @@ native int CURLcode curl_easy_getinfo_string(Handle hndl, CURLINFO info, char[] 
  * @ param 				value		Variable to store the value.
  * @ return 						The CURLcode code, see cURL_header.inc
  */
-native int CURLcode curl_easy_getinfo_int(Handle hndl, CURLINFO info, any &value);
+native CURLcode curl_easy_getinfo_int(Handle hndl, CURLINFO info, any &value);
 
 /**
  * URL encodes the given string 
