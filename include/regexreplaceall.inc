@@ -49,16 +49,14 @@ stock void RegexReplaceAll(char[] text, int size, const char[] search, const cha
 	int capCount = regexCaptures.MatchAll(repl, errorcode);
 
 	char buffer[8];
-	char valbuffer[8];
 	for (int i = 0; i < matchCount; i++) {
 		strcopy(replace, sizeof(replace), repl);
 
 		if (capCount > 0) {
 			for (int j = 0; j < capCount; j++) {
 				regexCaptures.GetSubString(0, buffer, sizeof(buffer), j);
-				Format(valbuffer, sizeof(valbuffer), buffer[1]);
 
-				int index = StringToInt(valbuffer);
+				int index = StringToInt(buffer[1]);
 				if (index >= captureCount) {
 					continue;
 				}
