@@ -20,16 +20,19 @@ stock void RegexReplaceAll(char[] text, int size, const char[] search, const cha
 
 	if (errorcode != REGEX_ERROR_NONE) {
 		LogError("Malformed regex: %s", search);
+		delete re;
 		return;
 	}
 
 	int matchCount = re.MatchAll(text, errorcode);
 	if (matchCount == 0) {
+		delete re;
 		return;
 	}
 
 	if (errorcode != REGEX_ERROR_NONE) {
 		LogError("Regex error %i. Text: %s Search Pattern: %s", errorcode, text, search);
+		delete re;
 		return;
 	}
 
