@@ -67,4 +67,7 @@ stock void RegexReplaceAll(char[] text, int size, const char[] search, const cha
 		
 		ReplaceString(text, size, match[i][0], replace);
 	}
+
+	delete re;
+	delete regexCaptures;
 }
