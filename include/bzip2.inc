@@ -23,7 +23,7 @@ enum BZ_Error {
 }
 
 typeset BZ2Callback {
-  function void (BZ_Error iError, char[] inFile, char[] outFile, any data);
+	function void (BZ_Error iError, char[] inFile, char[] outFile, any data);
 };
 
 native void BZ2_DecompressFile(char[] inFile, char[] outFile, BZ2Callback cb, any data = 0);
