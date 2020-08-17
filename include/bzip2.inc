@@ -22,9 +22,7 @@ enum BZ_Error {
 	BZ_IO_ERROR_OUTPUT   = -102,
 }
 
-typeset BZ2Callback {
-	function void (BZ_Error iError, char[] inFile, char[] outFile, any data);
-};
+typedef BZ2Callback = function void (BZ_Error iError, char[] inFile, char[] outFile, any data);
 
 native void BZ2_DecompressFile(char[] inFile, char[] outFile, BZ2Callback cb, any data = 0);
 native void BZ2_CompressFile(char[] inFile, char[] outFile, int iCompressionLevel, BZ2Callback cb, any data = 0);
