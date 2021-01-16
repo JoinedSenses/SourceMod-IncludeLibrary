@@ -14,6 +14,11 @@ methodmap Queue < Handle {
 		return view_as<Queue>(CreateArray(blocksize));
 	}
 
+	// Clears a queue of all entries.
+	public void Clear() {
+		ClearArray(this);
+	}
+
 	// Clones a queue, returning a new handle with the same size and data.
 	// This should NOT be confused with CloneHandle. This is a completely new
 	// handle with the same data but no relation to the original. It should
