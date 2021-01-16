@@ -5,6 +5,8 @@
 
 #include <adt_array>
 
+// A FIFO Queue methodmap
+// @Author JoinedSenses
 methodmap Queue < Handle {
 	// Creates A FIFO Queue based on the behaviors of ArrayList and ArrayStack.
 	// @param blocksize     The number of cells each member of the queue can
