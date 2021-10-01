@@ -191,7 +191,7 @@ enum EHTTPStatusCode
 	k_EHTTPStatusCode416RequestedRangeNotSatisfiable = 416,
 	k_EHTTPStatusCode417ExpectationFailed =            417,
 	k_EHTTPStatusCode4xxUnknown =                      418, // 418 is reserved, so we'll use it to mean unknown
-	k_EHTTPStatusCode429TooManyRequests	=              429,
+	k_EHTTPStatusCode429TooManyRequests =              429,
 
 	// Server error codes
 	k_EHTTPStatusCode500InternalServerError =          500,
