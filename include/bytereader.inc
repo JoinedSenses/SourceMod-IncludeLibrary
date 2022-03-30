@@ -15,13 +15,29 @@ enum struct ByteReader {
 	int size;
 	int offset;
 
-	void SetData(const char[] data, int dataSize, int offset) {
+	void SetData(const char[] data, int dataSize, int startingOffset = 0) {
+		if (dataSize > BYTEREADER_MAX) {
+			ThrowError(
+				"ByteReader dataSize %i exceeds max size of %i. Increase BYTEREADER_MAX if needed.",
+				dataSize,
+				BYTEREADER_MAX
+			);
+		}
+
+		if (startingOffset < 0 || startingOffset >= dataSize) {
+			ThrowError(
+				"ByteReader invalid starting offset %i. Must be in range of [0, %i)",
+				startingOffset,
+				dataSize
+			);
+		}
+
 		for (int i = 0; i < dataSize; ++i) {
 			this.data[i] = data[i];
 		}
 		this.data[dataSize] = 0;
 		this.size = dataSize;
-		this.offset = offset;
+		this.offset = startingOffset;
 	}
 
 	int GetByte() {
@@ -29,17 +45,11 @@ enum struct ByteReader {
 	}
 
 	int GetShort() {
-		int x[2];
-		x[0] = this.GetByte();
-		x[1] = this.GetByte();
-		return x[0] | x[1] << 8;
+		return this.GetByte() | (this.GetByte() << 8);
 	}
 
 	int GetLong() {
-		int x[2];
-		x[0] = this.GetShort();
-		x[1] = this.GetShort();
-		return x[0] | x[1] << 16;
+		return this.GetShort() | (this.GetShort() << 16);
 	}
 
 	void GetLongLong(char[] value, int size) {
