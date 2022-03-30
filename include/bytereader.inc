@@ -3,7 +3,7 @@
 #endif
 #define _bytereader_included_
 
-#define BYTEREADER_MAX 1248
+#define BYTEREADER_MAX 2048
 
 /**
  * An enum struct which provides a API to extract bytes from an underlying char buffer
