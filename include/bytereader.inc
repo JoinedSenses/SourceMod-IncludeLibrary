@@ -41,7 +41,14 @@ enum struct ByteReader {
 	}
 
 	int GetByte() {
-		return this.data[this.offset++];
+		int offset = this.offset;
+		if (offset < 0 || offset >= this.size) {
+			ThrowError("Read offset %i out of bounds [0, %i)", offset, this.size);
+		}
+
+		int ret = this.data[offset];
+		this.offset = offset + 1;
+		return ret;
 	}
 
 	int GetShort() {
