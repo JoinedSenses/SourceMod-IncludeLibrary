@@ -3,7 +3,7 @@
 #endif
 #define _bytereader_included_
 
-#define BYTEREADER_MAX 2048
+#define BYTEREADER_MAX 1248
 
 /**
  * An enum struct which provides a API to extract bytes from an underlying char buffer
@@ -46,9 +46,9 @@ enum struct ByteReader {
 			ThrowError("Read offset %i out of bounds [0, %i)", offset, this.size);
 		}
 
-		int ret = this.data[offset];
+		int byte = this.data[offset];
 		this.offset = offset + 1;
-		return ret;
+		return byte;
 	}
 
 	int GetShort() {
@@ -87,5 +87,9 @@ enum struct ByteReader {
 		}
 
 		this.offset += j + 1;
+	}
+
+	int Remaining() {
+		return this.size - this.offset;
 	}
 }
