@@ -52,6 +52,10 @@ enum struct ByteReader {
 		return this.GetShort() | (this.GetShort() << 16);
 	}
 
+	float GetFloat() {
+		return view_as<float>(this.GetLong());
+	}
+
 	void GetLongLong(char[] value, int size) {
 		int x[2];
 		x[0] = this.GetLong();
