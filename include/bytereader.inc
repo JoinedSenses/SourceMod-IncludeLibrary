@@ -3,7 +3,9 @@
 #endif
 #define _bytereader_included_
 
-#define BYTEREADER_MAX 2048
+#if !defined BYTEREADER_BUFFERMAX
+  #error Plugins must define BYTEREADER_MAX size prior to using this include
+#endif
 
 /**
  * An enum struct which provides a API to extract bytes from an underlying char buffer
@@ -11,16 +13,16 @@
  * @author JoinedSenses
  */
 enum struct ByteReader {
-	char data[BYTEREADER_MAX];
+	char data[BYTEREADER_BUFFERMAX];
 	int size;
 	int offset;
 
 	void SetData(const char[] data, int dataSize, int startingOffset = 0) {
-		if (dataSize > BYTEREADER_MAX) {
+		if (dataSize > BYTEREADER_BUFFERMAX) {
 			ThrowError(
-				"ByteReader dataSize %i exceeds max size of %i. Increase BYTEREADER_MAX if needed.",
+				"ByteReader dataSize %i exceeds max size of %i. Increase BYTEREADER_BUFFERMAX if needed.",
 				dataSize,
-				BYTEREADER_MAX
+				BYTEREADER_BUFFERMAX
 			);
 		}
 
