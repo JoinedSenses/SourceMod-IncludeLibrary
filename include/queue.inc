@@ -89,11 +89,40 @@ methodmap Queue < Handle {
 	// @param size          If not set, assumes the buffer size is equal to the
 	//                      blocksize.  Otherwise, the size passed is used.
 	// @return              Number of cells copied.
-	// @error               Invalid index.
+	// @error               Invalid index (0).
 	public int PopArray(any[] buffer, int size = -1) {
 		int cellCount = GetArrayArray(this, 0, buffer, size);
 		RemoveFromArray(this, 0);
 		return cellCount;
+	}
+
+	// Retrieves a cell value from the head of the queue
+	//
+	// @return              Value read.
+	// @error               Invalid index (0).
+	public any Peek() {
+		return GetArrayCell(this, 0);
+	}
+
+	// Retrieves a string value from the head of the queue
+	//
+	// @param buffer        Buffer to copy to.
+	// @param maxlength     Maximum size of the buffer.
+	// @return              Number of characters copied.
+	// @error               Invalid index (0).
+	public int PeekString(char[] buffer, int maxlength) {
+		return GetArrayString(this, 0, buffer, maxlength);
+	}
+
+	// Retrieves an array value from the head of the queue
+	//
+	// @param buffer        Buffer to store the array in.
+	// @param size          If not set, assumes the buffer size is equal to the
+	//                      blocksize.  Otherwise, the size passed is used.
+	// @return              Number of cells copied.
+	// @error               Invalid index (0).
+	public int PeekArray(any[] buffer, int size = -1) {
+		return GetArrayArray(this, 0, buffer, size);
 	}
 
 	// Returns true if the queue is empty, false otherwise.
