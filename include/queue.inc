@@ -63,8 +63,8 @@ methodmap Queue < Handle {
 
 	// Retrieves and removes a cell value from the head of the queue
 	//
-	// @return               Value read.
-	// @error                Invalid index (0).
+	// @return              Value read.
+	// @error               Invalid index (0).
 	public any Pop() {
 		any value = GetArrayCell(this, 0);
 		RemoveFromArray(this, 0);
