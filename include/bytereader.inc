@@ -76,7 +76,11 @@ enum struct ByteReader {
 		delete kv;
 	}
 
-	void GetString(char[] str, int size) {
+	bool GetString(char[] str, int size) {
+		if (size < 0) { size = 0; }
+
+		bool found = false;
+
 		int j = 0;
 		for (int i = this.offset; i < this.size; ++i, ++j) {
 			if (j < size) {
@@ -84,11 +88,19 @@ enum struct ByteReader {
 			}
 
 			if (this.data[i] == '\x0') {
+				found = true;
 				break;
 			}
 		}
 
 		this.offset += j + 1;
+
+		if (size) { // Add null terminator
+			int last = size - 1;
+			str[j < last ? j + 1 : last] = 0;
+		}
+
+		return found;
 	}
 
 	int Remaining() {
