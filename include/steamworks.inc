@@ -298,7 +298,7 @@ forward void SteamWorks_SteamServersConnected();
 forward void SteamWorks_SteamServersConnectFailure(EResult result);
 forward void SteamWorks_SteamServersDisconnected(EResult result);
 
-forward Action SteamWorks_RestartRequested();
+forward void SteamWorks_RestartRequested();
 forward void SteamWorks_TokenRequested(char[] sToken, int maxlen);
 
 forward void SteamWorks_OnClientGroupStatus(int authid, int groupid, bool isMember, bool isOfficer);
