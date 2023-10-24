@@ -281,6 +281,7 @@ native bool SteamWorks_GetHTTPStreamingResponseBodyData(Handle hRequest, int cOf
 native bool SteamWorks_GetHTTPDownloadProgressPct(Handle hRequest, float &percent);
 native bool SteamWorks_GetHTTPRequestWasTimedOut(Handle hRequest, bool &bWasTimedOut);
 native bool SteamWorks_SetHTTPRequestRawPostBody(Handle hRequest, const char[] sContentType, const char[] sBody, int bodylen);
+native bool SteamWorks_SetHTTPRequestRawPostBodyFromFile(Handle hRequest, const char[] sContentType, const char[] sFileName);
 
 typeset SteamWorksHTTPBodyCallback
 {
@@ -371,6 +372,7 @@ public void __ext_SteamWorks_SetNTVOptional()
 	MarkNativeAsOptional("SteamWorks_GetHTTPStreamingResponseBodyData");
 	MarkNativeAsOptional("SteamWorks_GetHTTPDownloadProgressPct");
 	MarkNativeAsOptional("SteamWorks_SetHTTPRequestRawPostBody");
+	MarkNativeAsOptional("SteamWorks_SetHTTPRequestRawPostBodyFromFile");
 
 	MarkNativeAsOptional("SteamWorks_GetHTTPResponseBodyCallback");
 	MarkNativeAsOptional("SteamWorks_WriteHTTPResponseBodyToFile");
